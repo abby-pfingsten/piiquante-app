@@ -15,11 +15,11 @@ mongoose
     "mongodb+srv://abbypfingsten:q1QVxPKmpLhPD5fF@cluster0.47dfkhh.mongodb.net/?retryWrites=true&w=majority"
   )
   .then(() => {
-    console.log("success");
+    console.log("Successful mongoose connection.");
   })
 
   .catch((error) => {
-    console.log("wrong");
+    console.log("Connection was unsuccessful");
     console.error(error);
   });
 
