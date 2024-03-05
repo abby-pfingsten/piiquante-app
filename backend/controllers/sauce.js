@@ -27,12 +27,12 @@ exports.createThing = (req, res, next) => {
     });
 };
 
-exports.getOneThing = (req, res, next) => {
-  Thing.findOne({
-    _id: req.params.thingid,
+exports.getOneSauce = (req, res, next) => {
+  Sauce.findOne({
+    _id: req.params.sauceid,
   })
-    .then((thing) => {
-      res.status(200).json(thing);
+    .then((sauce) => {
+      res.status(200).json(sauce);
     })
     .catch((error) => {
       console.log(error);
