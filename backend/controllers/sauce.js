@@ -1,60 +1,112 @@
-const User = require("../models/sauce");
+const Sauce = require("../models/sauce");
 // const bcrypt = require("bcrypt");
 // const jwt = require("jsonwebtoken");
+// const fs = require("fs");
 
-exports.signup = (req, res, next) => {
-  bcrypt.hash(req.body.password, 10).then((hash) => {
-    const user = new User({
-      email: req.body.email,
-      password: hash,
-    });
-    user
-      .save()
-      .then(() => {
-        res.status(201).json({
-          message: "User added successfully!",
-        });
-      })
-      .catch((error) => {
-        res.status(500).json({
-          error: error.message,
-        });
-      });
+exports.createThing = (req, res, next) => {
+  req.body.thing = JSON.parse(req.body.thing);
+  const url = req.protocol + "://" + req.get("host");
+  const thing = new Thing({
+    title: req.body.thing.title,
+    description: req.body.thing.description,
+    imageUrl: url + "/images/" + req.file.filename,
+    price: req.body.thing.price,
+    userId: req.body.thing.userId,
   });
-};
-
-exports.login = (req, res, next) => {
-  User.findOne({ email: req.body.email })
-    .then((user) => {
-      if (!user) {
-        return res.status(401).json({
-          error: new Error("User not found!"),
-        });
-      }
-      bcrypt
-        .compare(req.body.password, user.password)
-        .then((valid) => {
-          if (!valid) {
-            return res.status(401).json({
-              error: new Error("Incorrect password!"),
-            });
-          }
-          const token = jwt.sign({ userId: user._id }, "RANDOM_TOKEN_SECRET", {
-            expiresIn: "24h",
-          });
-          res.status(200).json({
-            userId: user._id,
-            token: token,
-          });
-        })
-        .catch((error) => {
-          res.status(500).json({
-            error: error,
-          });
-        });
+  thing
+    .save()
+    .then(() => {
+      res.status(201).json({
+        message: "Post saved successfully!",
+      });
     })
     .catch((error) => {
-      res.status(500).json({
+      res.status(400).json({
+        error: error,
+      });
+    });
+};
+
+exports.getOneThing = (req, res, next) => {
+  Thing.findOne({
+    _id: req.params.thingid,
+  })
+    .then((thing) => {
+      res.status(200).json(thing);
+    })
+    .catch((error) => {
+      console.log(error);
+
+      res.status(404).json({
+        error: error,
+      });
+    });
+};
+
+exports.updateThing = (req, res, next) => {
+  let thing = new Thing({ _id: req.params._id });
+  if (req.file) {
+    const url = req.protocol + "://" + req.get("host");
+    req.body.thing = JSON.parse(req.body.thing);
+    thing = {
+      _id: req.params.id,
+      title: req.body.thing.title,
+      description: req.body.thing.description,
+      imageUrl: url + "/images/" + req.file.filename,
+      price: req.body.thing.price,
+      userId: req.body.thing.userId,
+    };
+  } else {
+    thing = {
+      _id: req.params.id,
+      title: req.body.title,
+      description: req.body.description,
+      imageUrl: req.body.imageUrl,
+      price: req.body.price,
+      userId: req.body.userId,
+    };
+  }
+  Thing.updateOne({ _id: req.params.id }, thing)
+    .then(() => {
+      res.status(201).json({
+        message: "Thing updated successfully!",
+      });
+    })
+    .catch((error) => {
+      res.status(400).json({
+        error: error,
+      });
+    });
+};
+
+// exports.deleteThing = (req, res, next) => {
+//   Thing.findOne({ _id: req.params.id }).then((thing) => {
+//     const filename = thing.imageUrl.split("/images/")[1];
+//     fs.unlink("images/" + filename, () => {
+//       Thing.deleteOne({ _id: req.params.id })
+//         .then(() => {
+//           res.status(200).json({
+//             message: "Deleted!",
+//           });
+//         })
+//         .catch((error) => {
+//           res.status(400).json({
+//             error: error,
+//           });
+//         });
+//     });
+//   });
+// };
+
+exports.getAllSauces = (req, res, next) => {
+  // find method returns an array containing all of the
+  //  Things in the database
+  Sauce.find()
+    .then((sauces) => {
+      res.status(200).json(sauces);
+    })
+    .catch((error) => {
+      res.status(400).json({
         error: error,
       });
     });
