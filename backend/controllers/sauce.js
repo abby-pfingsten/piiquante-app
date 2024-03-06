@@ -43,41 +43,53 @@ exports.getOneSauce = (req, res, next) => {
     });
 };
 
-// exports.updateThing = (req, res, next) => {
-//   let thing = new Thing({ _id: req.params._id });
-//   if (req.file) {
-//     const url = req.protocol + "://" + req.get("host");
-//     req.body.thing = JSON.parse(req.body.thing);
-//     thing = {
-//       _id: req.params.id,
-//       title: req.body.thing.title,
-//       description: req.body.thing.description,
-//       imageUrl: url + "/images/" + req.file.filename,
-//       price: req.body.thing.price,
-//       userId: req.body.thing.userId,
-//     };
-//   } else {
-//     thing = {
-//       _id: req.params.id,
-//       title: req.body.title,
-//       description: req.body.description,
-//       imageUrl: req.body.imageUrl,
-//       price: req.body.price,
-//       userId: req.body.userId,
-//     };
-//   }
-//   Thing.updateOne({ _id: req.params.id }, thing)
-//     .then(() => {
-//       res.status(201).json({
-//         message: "Thing updated successfully!",
-//       });
-//     })
-//     .catch((error) => {
-//       res.status(400).json({
-//         error: error,
-//       });
-//     });
-// };
+exports.updateThing = (req, res, next) => {
+  let sauce = new Sauce({ _id: req.params._id });
+  if (req.file) {
+    const url = req.protocol + "://" + req.get("host");
+    req.body.sauce = JSON.parse(req.body.sauce);
+    sauce = {
+      _id: req.params.id,
+      userId: req.body.sauce.userId,
+      name: req.body.sauce.name,
+      manufacturer: req.body.suace.manufacturer,
+      description: req.body.sauce.description,
+      mainPepper: req.body.sauce.mainPepper,
+      imageUrl: url + "/images/" + req.file.filename,
+      heat: req.body.sauce.heat,
+      likes: req.body.sauce.likes,
+      dislikes: req.body.sauce.dislikes,
+      usersLiked: req.body.sauce.usersLiked,
+      usersDisliked: req.body.sauce.usersDisliked,
+    };
+  } else {
+    sauce = {
+      _id: req.params.id,
+      userId: req.body.sauce.userId,
+      name: req.body.sauce.name,
+      manufacturer: req.body.suace.manufacturer,
+      description: req.body.sauce.description,
+      mainPepper: req.body.sauce.mainPepper,
+      imageUrl: url + "/images/" + req.file.filename,
+      heat: req.body.sauce.heat,
+      likes: req.body.sauce.likes,
+      dislikes: req.body.sauce.dislikes,
+      usersLiked: req.body.sauce.usersLiked,
+      usersDisliked: req.body.sauce.usersDisliked,
+    };
+  }
+  Sauce.updateOne({ _id: req.params.id }, sauce)
+    .then(() => {
+      res.status(201).json({
+        message: "Sauce updated successfully!",
+      });
+    })
+    .catch((error) => {
+      res.status(400).json({
+        error: error,
+      });
+    });
+};
 
 // exports.deleteThing = (req, res, next) => {
 //   Thing.findOne({ _id: req.params.id }).then((thing) => {
