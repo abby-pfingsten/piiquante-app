@@ -44,7 +44,7 @@ app.use((req, res, next) => {
 // app.use("/api/stuff", stuffRoutes);
 app.use("/images", express.static(path.join(__dirname, "images")));
 app.use("/api/auth", userRoutes);
-app.use("/api/sauce", sauceRoutes);
+app.use("/api/sauces", sauceRoutes);
 
 // need app.use for login?
 module.exports = app;
