@@ -8,6 +8,6 @@ const sauceControl = require("../controllers/sauce");
 
 router.get("/", auth, sauceControl.getAllSauces);
 router.get("/:id", auth, sauceControl.getOneSauce);
-router.post("/:id", auth, multer, sauceControl.addOneSauce);
+router.post("/", auth, multer, sauceControl.addOneSauce);
 
 module.exports = router;
