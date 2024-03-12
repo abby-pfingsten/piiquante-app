@@ -137,43 +137,32 @@ exports.modifySauce = (req, res, next) => {
     });
 };
 
-
 exports.setLikes = (req, res, next) => {
   let sauce = new Sauce({ _id: req.params._id });
 
-  
-  // if (req.file) {
-  //   const url = req.protocol + "://" + req.get("host");
-  //   req.body.sauce = JSON.parse(req.body.sauce);
-  //   sauce = {
-  //     _id: req.params.id,
-  //     userId: req.body.sauce.userId,
-  //     name: req.body.sauce.name,
-  //     manufacturer: req.body.sauce.manufacturer,
-  //     description: req.body.sauce.description,
-  //     mainPepper: req.body.sauce.mainPepper,
-  //     imageUrl: url + "/images/" + req.file.filename,
-  //     heat: req.body.sauce.heat,
-  //     likes: req.body.sauce.likes,
-  //     dislikes: req.body.sauce.dislikes,
-  //     usersLiked: req.body.sauce.usersLiked,
-  //     usersDisliked: req.body.sauce.usersDisliked,
-  //   };
-  // } else {
-    sauce = {
-      _id: req.params.id,
-      userId: req.body.userId,
-      name: req.body.name,
-      manufacturer: req.body.manufacturer,
-      description: req.body.description,
-      mainPepper: req.body.mainPepper,
-      imageUrl: req.body.imageUrl,
-      heat: req.body.heat,
-      likes: req.body.likes,
-      dislikes: req.body.dislikes,
-      usersLiked: req.body.usersLiked,
-      usersDisliked: req.body.usersDisliked,
-    };
+  let likeCount = 0;
+  let dislikeCount = 0;
+  let likedUsers = [];
+  let dislikedUsers = [];
+  if (req.body.like === 1) {
+    likeCount += 1;
+    let likedUsers = req.body.userId;
+  } else if (req.body.like === -1) {
+    dislikeCount = 1;
+    let dislikedUsers = req.body.userId;
+  } else {
+    likeCount = -1;
+    let dislikeCount = -1;
+  }
+
+  sauce = {
+    _id: req.params.id,
+    userId: req.body.userId,
+    likes: (req.body.likes += likeCount),
+    dislikes: (req.body.dislikes += dislikeCount),
+    usersLiked: req.body.usersLiked,
+    usersDisliked: req.body.usersDisliked,
+  };
   // }
   Sauce.updateOne({ _id: req.params.id }, sauce)
     .then(() => {
