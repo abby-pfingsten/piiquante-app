@@ -147,13 +147,13 @@ exports.setLikes = (req, res, next) => {
     let dislikedUsers = [];
     if (req.body.like === 1) {
       likeCount += 1;
-      likedUsers = likedUsers.push(req.body.userId);
+      likedUsers.push(req.body.userId);
     } else if (req.body.like === -1) {
-      dislikeCount = 1;
-      dislikedUsers = req.body.userId;
+      dislikeCount += 1;
+      dislikedUsers.push(req.body.userId);
     } else {
       likeCount = -1;
-      let dislikeCount = -1;
+      dislikeCount = -1;
     }
 
     sauce = {
