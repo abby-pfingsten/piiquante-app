@@ -138,41 +138,49 @@ exports.modifySauce = (req, res, next) => {
 };
 
 exports.setLikes = (req, res, next) => {
-  let sauce = new Sauce({ _id: req.params._id });
+  Sauce.findOne({ _id: req.params.id }).then((oldSauce) => {
+    let sauce = new Sauce({ _id: req.params._id });
 
-  let likeCount = 0;
-  let dislikeCount = 0;
-  let likedUsers = [];
-  let dislikedUsers = [];
-  if (req.body.like === 1) {
-    likeCount += 1;
-    let likedUsers = req.body.userId;
-  } else if (req.body.like === -1) {
-    dislikeCount = 1;
-    let dislikedUsers = req.body.userId;
-  } else {
-    likeCount = -1;
-    let dislikeCount = -1;
-  }
+    let likeCount = 0;
+    let dislikeCount = 0;
+    let likedUsers = [];
+    let dislikedUsers = [];
+    if (req.body.like === 1) {
+      likeCount += 1;
+      likedUsers = likedUsers.push(req.body.userId);
+    } else if (req.body.like === -1) {
+      dislikeCount = 1;
+      dislikedUsers = req.body.userId;
+    } else {
+      likeCount = -1;
+      let dislikeCount = -1;
+    }
 
-  sauce = {
-    _id: req.params.id,
-    userId: req.body.userId,
-    likes: (req.body.likes += likeCount),
-    dislikes: (req.body.dislikes += dislikeCount),
-    usersLiked: req.body.usersLiked,
-    usersDisliked: req.body.usersDisliked,
-  };
-  // }
-  Sauce.updateOne({ _id: req.params.id }, sauce)
-    .then(() => {
-      res.status(201).json({
-        message: "Sauce likes updated successfully!",
+    sauce = {
+      _id: req.params.id,
+      userId: req.body.userId,
+      name: oldSauce.name,
+      manufacturer: oldSauce.manufacturer,
+      description: oldSauce.description,
+      mainPepper: oldSauce.mainPepper,
+      imageUrl: oldSauce.imageUrl,
+      heat: oldSauce.heat,
+      likes: (oldSauce.likes += likeCount),
+      dislikes: (oldSauce.dislikes += dislikeCount),
+      usersLiked: likedUsers,
+      usersDisliked: dislikedUsers,
+    };
+    // }
+    Sauce.updateOne({ _id: req.params.id }, sauce)
+      .then(() => {
+        res.status(201).json({
+          message: "Sauce likes updated successfully!",
+        });
+      })
+      .catch((error) => {
+        res.status(400).json({
+          error: error,
+        });
       });
-    })
-    .catch((error) => {
-      res.status(400).json({
-        error: error,
-      });
-    });
+  });
 };
