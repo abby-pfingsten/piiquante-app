@@ -150,14 +150,12 @@ exports.setLikes = (req, res, next) => {
 
     if (req.body.like === 1) {
       // you only want a user to be able to like
-      // if (req.body.userId !== oldSauce.userId) {
       if (!oldSauce.usersLiked.includes(req.body.userId)) {
         likeCount += 1;
         likedUsers.push(req.body.userId);
       }
     } else if (req.body.like === -1) {
       if (!oldSauce.usersDisliked.includes(req.body.userId)) {
-        // if (req.body.userId !== oldSauce.userId) {
         dislikeCount += 1;
         dislikedUsers.push(req.body.userId);
       }
@@ -165,12 +163,12 @@ exports.setLikes = (req, res, next) => {
       // you only want this chunk to do anything if the
       // user is the same aka they have already liked
       // or disliked something
-      // if (req.body.userId == oldSauce.userId) {
       if (oldSauce.usersDisliked.includes(req.body.userId)) {
-        // likeCount = -1;
         dislikeCount -= 1;
+        oldSauce.usersDisliked.filter((item) => item !== req.body.userId);
       } else if (oldSauce.usersLiked.includes(req.body.userId)) {
         likeCount -= 1;
+        oldSauce.usersLiked.filter((item) => item !== req.body.userId);
       }
     }
 
