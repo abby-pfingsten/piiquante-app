@@ -141,19 +141,37 @@ exports.setLikes = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id }).then((oldSauce) => {
     let sauce = new Sauce({ _id: req.params._id });
 
+    // initialize the like/dislike counts
+    // and users liked/disliked arrays
     let likeCount = 0;
     let dislikeCount = 0;
     let likedUsers = [];
     let dislikedUsers = [];
+
     if (req.body.like === 1) {
-      likeCount += 1;
-      likedUsers.push(req.body.userId);
+      // you only want a user to be able to like
+      // if (req.body.userId !== oldSauce.userId) {
+      if (!oldSauce.usersLiked.includes(req.body.userId)) {
+        likeCount += 1;
+        likedUsers.push(req.body.userId);
+      }
     } else if (req.body.like === -1) {
-      dislikeCount += 1;
-      dislikedUsers.push(req.body.userId);
+      if (!oldSauce.usersDisliked.includes(req.body.userId)) {
+        // if (req.body.userId !== oldSauce.userId) {
+        dislikeCount += 1;
+        dislikedUsers.push(req.body.userId);
+      }
     } else {
-      likeCount = -1;
-      dislikeCount = -1;
+      // you only want this chunk to do anything if the
+      // user is the same aka they have already liked
+      // or disliked something
+      // if (req.body.userId == oldSauce.userId) {
+      if (oldSauce.usersDisliked.includes(req.body.userId)) {
+        // likeCount = -1;
+        dislikeCount -= 1;
+      } else if (oldSauce.usersLiked.includes(req.body.userId)) {
+        likeCount -= 1;
+      }
     }
 
     sauce = {
