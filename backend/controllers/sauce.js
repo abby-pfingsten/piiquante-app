@@ -140,6 +140,7 @@ exports.modifySauce = (req, res, next) => {
 exports.setLikes = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id }).then((oldSauce) => {
     let sauce = new Sauce({ _id: req.params._id });
+    const requestUserId = req.body.userId;
 
     // initialize the like/dislike counts
     // and users liked/disliked arrays
@@ -150,33 +151,49 @@ exports.setLikes = (req, res, next) => {
 
     if (req.body.like === 1) {
       // you only want a user to be able to like
-      if (!oldSauce.usersLiked.includes(req.body.userId)) {
+      if (!oldSauce.usersLiked.includes(requestUserId)) {
+        ({ dislikedUsers, dislikeCount, likedUsers, likeCount } =
+          resetLikeCount(
+            dislikedUsers,
+            requestUserId,
+            dislikeCount,
+            likedUsers,
+            likeCount
+          ));
+
         likeCount += 1;
-        likedUsers.push(req.body.userId);
+        likedUsers.push(requestUserId);
       }
     } else if (req.body.like === -1) {
-      if (!oldSauce.usersDisliked.includes(req.body.userId)) {
+      if (!oldSauce.usersDisliked.includes(requestUserId)) {
+        ({ dislikedUsers, dislikeCount, likedUsers, likeCount } =
+          resetLikeCount(
+            dislikedUsers,
+            requestUserId,
+            dislikeCount,
+            likedUsers,
+            likeCount
+          ));
+
         dislikeCount += 1;
-        dislikedUsers.push(req.body.userId);
+        dislikedUsers.push(requestUserId);
       }
     } else {
       // you only want this chunk to do anything if the
       // user is the same aka they have already liked
       // or disliked something
-      if (dislikedUsers.includes(req.body.userId)) {
-        dislikeCount -= 1;
-        dislikedUsers = dislikedUsers.filter(
-          (item) => item !== req.body.userId
-        );
-      } else if (likedUsers.includes(req.body.userId)) {
-        likeCount -= 1;
-        likedUsers = likedUsers.filter((item) => item !== req.body.userId);
-      }
+      ({ dislikedUsers, dislikeCount, likedUsers, likeCount } = resetLikeCount(
+        dislikedUsers,
+        requestUserId,
+        dislikeCount,
+        likedUsers,
+        likeCount
+      ));
     }
 
     sauce = {
       _id: req.params.id,
-      userId: req.body.userId,
+      userId: requestUserId,
       name: oldSauce.name,
       manufacturer: oldSauce.manufacturer,
       description: oldSauce.description,
@@ -202,3 +219,20 @@ exports.setLikes = (req, res, next) => {
       });
   });
 };
+function resetLikeCount(
+  dislikedUsers,
+  requestUserId,
+  dislikeCount,
+  likedUsers,
+  likeCount
+) {
+  if (dislikedUsers.includes(requestUserId)) {
+    dislikeCount -= 1;
+    dislikedUsers = dislikedUsers.filter((item) => item !== requestUserId);
+  }
+  if (likedUsers.includes(requestUserId)) {
+    likeCount -= 1;
+    likedUsers = likedUsers.filter((item) => item !== requestUserId);
+  }
+  return { dislikedUsers, dislikeCount, likedUsers, likeCount };
+}
