@@ -91,6 +91,8 @@ exports.getAllSauces = (req, res, next) => {
 
 exports.modifySauce = (req, res, next) => {
   let sauce = new Sauce({ _id: req.params._id });
+  // use req.auth.userId and if its not equal to req body user id return status code of 401
+  
   if (req.file) {
     const url = req.protocol + "://" + req.get("host");
     req.body.sauce = JSON.parse(req.body.sauce);
