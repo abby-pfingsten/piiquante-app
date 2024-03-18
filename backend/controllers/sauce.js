@@ -92,51 +92,57 @@ exports.getAllSauces = (req, res, next) => {
 exports.modifySauce = (req, res, next) => {
   let sauce = new Sauce({ _id: req.params._id });
   // use req.auth.userId and if its not equal to req body user id return status code of 401
-  
-  if (req.file) {
-    const url = req.protocol + "://" + req.get("host");
-    req.body.sauce = JSON.parse(req.body.sauce);
-    sauce = {
-      _id: req.params.id,
-      userId: req.body.sauce.userId,
-      name: req.body.sauce.name,
-      manufacturer: req.body.sauce.manufacturer,
-      description: req.body.sauce.description,
-      mainPepper: req.body.sauce.mainPepper,
-      imageUrl: url + "/images/" + req.file.filename,
-      heat: req.body.sauce.heat,
-      likes: req.body.sauce.likes,
-      dislikes: req.body.sauce.dislikes,
-      usersLiked: req.body.sauce.usersLiked,
-      usersDisliked: req.body.sauce.usersDisliked,
-    };
+  if (req.auth.userId === req.body.userId) {
+    if (req.file) {
+      const url = req.protocol + "://" + req.get("host");
+      req.body.sauce = JSON.parse(req.body.sauce);
+      sauce = {
+        _id: req.params.id,
+        userId: req.body.sauce.userId,
+        name: req.body.sauce.name,
+        manufacturer: req.body.sauce.manufacturer,
+        description: req.body.sauce.description,
+        mainPepper: req.body.sauce.mainPepper,
+        imageUrl: url + "/images/" + req.file.filename,
+        heat: req.body.sauce.heat,
+        likes: req.body.sauce.likes,
+        dislikes: req.body.sauce.dislikes,
+        usersLiked: req.body.sauce.usersLiked,
+        usersDisliked: req.body.sauce.usersDisliked,
+      };
+    } else {
+      sauce = {
+        _id: req.params.id,
+        userId: req.body.userId,
+        name: req.body.name,
+        manufacturer: req.body.manufacturer,
+        description: req.body.description,
+        mainPepper: req.body.mainPepper,
+        imageUrl: req.body.imageUrl,
+        heat: req.body.heat,
+        likes: req.body.likes,
+        dislikes: req.body.dislikes,
+        usersLiked: req.body.usersLiked,
+        usersDisliked: req.body.usersDisliked,
+      };
+    }
+    // }
+    Sauce.updateOne({ _id: req.params.id }, sauce)
+      .then(() => {
+        res.status(201).json({
+          message: "Sauce updated successfully!",
+        });
+      })
+      .catch((error) => {
+        res.status(400).json({
+          error: error,
+        });
+      });
   } else {
-    sauce = {
-      _id: req.params.id,
-      userId: req.body.userId,
-      name: req.body.name,
-      manufacturer: req.body.manufacturer,
-      description: req.body.description,
-      mainPepper: req.body.mainPepper,
-      imageUrl: req.body.imageUrl,
-      heat: req.body.heat,
-      likes: req.body.likes,
-      dislikes: req.body.dislikes,
-      usersLiked: req.body.usersLiked,
-      usersDisliked: req.body.usersDisliked,
-    };
-  }
-  Sauce.updateOne({ _id: req.params.id }, sauce)
-    .then(() => {
-      res.status(201).json({
-        message: "Sauce updated successfully!",
-      });
-    })
-    .catch((error) => {
-      res.status(400).json({
-        error: error,
-      });
+    res.status(401).json({
+      message: "Not same user",
     });
+  }
 };
 
 exports.setLikes = (req, res, next) => {
