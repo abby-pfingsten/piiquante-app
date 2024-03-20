@@ -90,9 +90,12 @@ exports.getAllSauces = (req, res, next) => {
 };
 
 exports.modifySauce = (req, res, next) => {
-  let sauce = new Sauce({ _id: req.params._id });
+  let sauce = new Sauce({ _id: req.params.id });
   // use req.auth.userId and if its not equal to req body user id return status code of 401
-  if (req.auth.userId === req.body.userId) {
+  if (
+    req.auth.userId === req.body.userId ||
+    req.auth.userId === JSON.parse(req.body.sauce).userId
+  ) {
     if (req.file) {
       const url = req.protocol + "://" + req.get("host");
       req.body.sauce = JSON.parse(req.body.sauce);
@@ -126,7 +129,6 @@ exports.modifySauce = (req, res, next) => {
         usersDisliked: req.body.usersDisliked,
       };
     }
-    // }
     Sauce.updateOne({ _id: req.params.id }, sauce)
       .then(() => {
         res.status(201).json({
