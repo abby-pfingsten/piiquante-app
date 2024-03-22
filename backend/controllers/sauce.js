@@ -149,7 +149,7 @@ exports.modifySauce = (req, res, next) => {
 
 exports.setLikes = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id }).then((oldSauce) => {
-    let sauce = new Sauce({ _id: req.params._id });
+    let sauce = new Sauce({ _id: req.params.id });
     const requestUserId = req.body.userId;
 
     // initialize the like/dislike counts
@@ -203,7 +203,7 @@ exports.setLikes = (req, res, next) => {
 
     sauce = {
       _id: req.params.id,
-      userId: requestUserId,
+      userId: oldSauce.userId,
       name: oldSauce.name,
       manufacturer: oldSauce.manufacturer,
       description: oldSauce.description,
