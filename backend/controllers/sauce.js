@@ -130,7 +130,8 @@ exports.modifySauce = (req, res, next) => {
       };
     }
     Sauce.updateOne({ _id: req.params.id }, sauce)
-      .then(() => {
+      .then((result) => {
+        console.log(result);
         res.status(201).json({
           message: "Sauce updated successfully!",
         });
