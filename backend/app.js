@@ -5,6 +5,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const mongodbErrorHandler = require("mongoose-mongodb-errors");
 const path = require("path");
 
 const userRoutes = require("./routes/user");
@@ -25,6 +26,8 @@ mongoose
     console.log("Connection was unsuccessful");
     console.error(error);
   });
+
+mongoose.plugin(mongodbErrorHandler);
 
 app.use(express.json());
 
