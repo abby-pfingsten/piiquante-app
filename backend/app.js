@@ -27,7 +27,7 @@ mongoose
     console.error(error);
   });
 
-  mongoose.plugin(mongodbErrorHandler);
+mongoose.plugin(mongodbErrorHandler);
 
 app.use(express.json());
 
